@@ -1,73 +1,37 @@
+// path/filename: components/Home.js
 'use client'
-// path/filename: src/components/ProductList.tsx
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import { useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { setProducts, selectProducts } from '@/store/productsSlice'
+import { getData } from '@/utils/fetchData'
 
-/**
- * Interface for product data structure from fakestoreapi.com.
- */
-interface Product {
-  id: number
-  title: string
-  price: number
-  description: string
-  category: string
-  image: string
-}
-
-/**
- * Fetches product list from fakestoreapi.com.
- * @returns Promise<Product[]> A promise that resolves to an array of products.
- */
-const fetchProducts = async (): Promise<Product[]> => {
-  try {
-    const response = await axios.get('https://fakestoreapi.com/products')
-    return response.data as Product[]
-  } catch (error) {
-    console.error('Failed to fetch products:', error)
-    throw new Error('Failed to fetch products. Please try again.')
-  }
-}
-
-const ProductList: React.FC = () => {
-  const [products, setProducts] = useState<Product[]>([])
-  const [loading, setLoading] = useState<boolean>(true)
-  const [error, setError] = useState<string>('')
+const ProductsList = () => {
+  const dispatch = useDispatch()
+  const products = useSelector(selectProducts)
 
   useEffect(() => {
-    fetchProducts()
-      .then((data) => {
-        setProducts(data)
-        setLoading(false)
-      })
-      .catch((err) => {
-        setError(err.message)
-        setLoading(false)
-      })
-  }, [])
+    const loadProducts = async () => {
+      const data = await getData('https://fakestoreapi.com/products')
+      dispatch(setProducts(data))
+    }
 
-  if (loading) return <p>Loading products...</p>
-  if (error) return <p>Error fetching products: {error}</p>
+    loadProducts()
+  }, [dispatch])
 
   return (
     <div>
-      <h2>Products</h2>
-      <div>
-        {products.map((product) => (
-          <div key={product.id}>
-            <h3>{product.title}</h3>
-            <img
-              src={product.image}
-              alt={product.title}
-              style={{ width: '100px' }}
-            />
-            <p>{product.price}</p>
+      <h1>Produtos</h1>
+      <ul>
+        {products.map(product => (
+          <li key={product.id}>
+            <h2>{product.name}</h2>
             <p>{product.description}</p>
-          </div>
+            <p>${product.price}</p>
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   )
 }
 
-export default ProductList
+export default ProductsList

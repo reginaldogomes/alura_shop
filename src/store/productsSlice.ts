@@ -1,45 +1,36 @@
-// /store/productsSlice.ts
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit'
-import { fetchProducts } from '@/services/productService'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
+import type { RootState } from './store'
 
+// Defina a interface para o estado do produto
 interface ProductState {
-  products: any[]
-  status: 'idle' | 'loading' | 'succeeded' | 'failed'
-  error: string | null
+  products: Array<{
+    id: number
+    name: string
+    description: string
+    price: number
+  }>
 }
 
+// Estado inicial
 const initialState: ProductState = {
   products: [],
-  status: 'idle',
-  error: null,
 }
 
-export const loadProducts = createAsyncThunk(
-  'products/loadProducts',
-  async () => {
-    const response = await fetchProducts()
-    return response
-  },
-)
-
-const productsSlice = createSlice({
+export const productsSlice = createSlice({
   name: 'products',
   initialState,
-  reducers: {},
-  extraReducers(builder) {
-    builder
-      .addCase(loadProducts.pending, (state, action) => {
-        state.status = 'loading'
-      })
-      .addCase(loadProducts.fulfilled, (state, action) => {
-        state.status = 'succeeded'
-        state.products = action.payload
-      })
-      .addCase(loadProducts.rejected, (state, action) => {
-        state.status = 'failed'
-        state.error = action.error.message || null
-      })
+  reducers: {
+    setProducts: (state, action: PayloadAction<ProductState['products']>) => {
+      state.products = action.payload
+    },
   },
 })
 
+// Ações
+export const { setProducts } = productsSlice.actions
+
+// Seletor
+export const selectProducts = (state: RootState) => state.products.products
+
+// Reducer
 export default productsSlice.reducer
