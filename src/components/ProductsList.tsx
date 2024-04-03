@@ -11,6 +11,9 @@ const ProductsList = () => {
 
   useEffect(() => {
     const loadProducts = async () => {
+      // const apiUrl = 'API_ENDPOINT_PRODUCTS'
+      // if (!apiUrl)
+      //   throw new Error('API URL is not defined in the environment variables')
       const data = await getData('https://fakestoreapi.com/products')
       dispatch(setProducts(data))
     }
