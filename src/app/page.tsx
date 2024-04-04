@@ -1,5 +1,5 @@
 'use client'
-import ProductsList from '@/components/ProductsList'
+import ProductsList from '@/components/Products/ProductsList'
 import { store } from '@/store/store'
 import { Provider } from 'react-redux'
 
